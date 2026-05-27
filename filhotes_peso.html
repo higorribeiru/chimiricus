@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐶 Pesagem dos Filhotes</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f4ef;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --muted: #7a7570;
+    --border: #e5e0d8;
+    --accent: #c85a2a;
+    --accent2: #3a7d6e;
+    --accent3: #5a6fa8;
+    --warn: #c85a2a;
+    --good: #3a7d6e;
+    --yellow: #c4960f;
+    --pup1: #c85a2a;
+    --pup2: #3a7d6e;
+    --pup3: #5a6fa8;
+    --pup4: #9b5ea2;
+    --pup5: #c4960f;
+    --pup6: #2a6e7a;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  header {
+    background: var(--text);
+    color: #f7f4ef;
+    padding: 28px 32px 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  header h1 {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+  header .subtitle {
+    font-size: 13px;
+    color: #aaa49c;
+    margin-top: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+  header .header-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: all .15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { opacity: .88; }
+  .btn-outline {
+    background: transparent;
+    color: #f7f4ef;
+    border-color: #4a4540;
+  }
+  .btn-outline:hover { background: #2a2520; }
+  .btn-outline-dark {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .btn-outline-dark:hover { background: #f0ece4; }
+  .btn-green {
+    background: var(--good);
+    color: #fff;
+    border-color: var(--good);
+  }
+  .btn-green:hover { opacity: .88; }
+
+  main { max-width: 960px; margin: 0 auto; padding: 32px 20px 0; }
+
+  /* CARDS SUMÁRIO */
+  .pup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .pup-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    padding: 16px 14px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pup-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .pup-accent { background: var(--c); }
+
+  .pup-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .pup-weight {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .pup-unit { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+  .pup-delta {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .delta-pos { background: #e8f4f0; color: #2a6b5c; }
+  .delta-neg { background: #fceee8; color: #a03820; }
+  .delta-neu { background: #f0ece4; color: var(--muted); }
+
+  /* INSIGHTS */
+  .insights-bar {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin-bottom: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .insight-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 130px;
+  }
+  .insight-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .insight-value {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .insight-value.good { color: var(--good); }
+  .insight-value.warn { color: var(--warn); }
+
+  /* GRÁFICO */
+  .chart-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 32px;
+  }
+  .chart-card h2 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 18px;
+    font-family: 'DM Mono', monospace;
+  }
+  #chartWrap { position: relative; width: 100%; height: 300px; }
+
+  /* TABELA */
+  .table-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 32px;
+    overflow-x: auto;
+  }
+  .table-card h2 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 18px;
+    font-family: 'DM Mono', monospace;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    border-bottom: 1.5px solid var(--border);
+    font-weight: 500;
+  }
+  tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0ece4;
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #faf8f4; }
+  .td-name { font-family: 'DM Sans', sans-serif; font-weight: 500; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* FORMULÁRIO NOVA PESAGEM */
+  .form-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 32px;
+  }
+  .form-card h2 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 18px;
+    font-family: 'DM Mono', monospace;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: end;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group label {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .form-group input {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s;
+  }
+  .form-group input:focus { border-color: var(--accent); }
+  .form-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+  /* MODAL COPIAR/COLAR */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 28px;
+    max-width: 540px;
+    width: 100%;
+    box-shadow: 0 8px 40px rgba(0,0,0,.18);
+  }
+  .modal h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .modal p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .modal textarea {
+    width: 100%;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    resize: vertical;
+    outline: none;
+    min-height: 120px;
+    white-space: pre;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  .modal-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .msg-ok {
+    font-size: 13px;
+    color: var(--good);
+    font-family: 'DM Mono', monospace;
+    margin-top: 8px;
+    min-height: 20px;
+  }
+
+  /* LEGENDA GRÁFICO */
+  .chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-swatch {
+    width: 20px;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 500px) {
+    header { padding: 20px 16px; }
+    main { padding: 20px 12px 0; }
+    .chart-card, .table-card, .form-card, .insights-bar { padding: 16px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🐶 Filhotes — Peso</h1>
+    <div class="subtitle" id="headerSub">carregando...</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" onclick="openExport()">&#x2197; Compartilhar dados</button>
+    <button class="btn btn-outline" onclick="openImport()">&#x2193; Importar dados</button>
+    <button class="btn btn-outline" onclick="openDelete()">&#x2715; Excluir registro</button>
+  </div>
+</header>
+
+<main>
+  <!-- CARDS -->
+  <div class="pup-grid" id="pupGrid"></div>
+
+  <!-- INSIGHTS -->
+  <div class="insights-bar" id="insightsBar"></div>
+
+  <!-- GRÁFICO -->
+  <div class="chart-card">
+    <h2>Evolução do peso (g)</h2>
+    <div class="chart-legend" id="chartLegend"></div>
+    <div id="chartWrap">
+      <canvas id="myChart" role="img" aria-label="Gráfico de linhas mostrando evolução de peso dos 6 filhotes ao longo dos dias de pesagem.">Evolução de peso dos filhotes.</canvas>
+    </div>
+  </div>
+
+  <!-- TABELA -->
+  <div class="table-card">
+    <h2>Histórico de pesagens</h2>
+    <div id="tableWrap"></div>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-card">
+    <h2>Registrar nova pesagem</h2>
+    <div class="form-row" id="formFields"></div>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="saveNewWeighing()">Salvar pesagem</button>
+      <button class="btn btn-outline-dark" onclick="clearForm()">Limpar</button>
+    </div>
+    <div class="msg-ok" id="formMsg"></div>
+  </div>
+</main>
+
+<!-- MODAL EXPORTAR -->
+<div class="modal-overlay" id="modalExport">
+  <div class="modal">
+    <h3>📤 Compartilhar dados</h3>
+    <p>Copie o texto abaixo e mande no WhatsApp. Quem receber cola no campo "Importar dados" e clica em Aplicar.</p>
+    <textarea id="exportText" readonly></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="copyExport()">Copiar tudo</button>
+      <button class="btn btn-outline-dark" onclick="closeModal('modalExport')">Fechar</button>
+    </div>
+    <div class="msg-ok" id="exportMsg"></div>
+  </div>
+</div>
+
+<!-- MODAL IMPORTAR -->
+<div class="modal-overlay" id="modalImport">
+  <div class="modal">
+    <h3>📥 Importar dados</h3>
+    <p>Cole aqui o código que você recebeu. Ele vai substituir todos os dados atuais neste dispositivo.</p>
+    <textarea id="importText" placeholder="Cole o código aqui..."></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-green" onclick="applyImport()">Aplicar e salvar</button>
+      <button class="btn btn-outline-dark" onclick="closeModal('modalImport')">Cancelar</button>
+    </div>
+    <div class="msg-ok" id="importMsg"></div>
+  </div>
+</div>
+
+<!-- MODAL EXCLUIR PESAGEM -->
+<div class="modal-overlay" id="modalDelete">
+  <div class="modal">
+    <h3>🗑 Excluir registro</h3>
+    <p>Selecione a data que deseja remover. A primeira pesagem não pode ser excluída (ela é a base de referência).</p>
+    <div id="deleteList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:4px;"></div>
+    <div class="modal-actions" style="margin-top:12px;">
+      <button class="btn btn-outline-dark" onclick="closeModal('modalDelete')">Fechar</button>
+    </div>
+    <div class="msg-ok" id="deleteMsg"></div>
+  </div>
+</div>
+
+<script>
+// ─── DADOS INICIAIS ───────────────────────────────────────────────
+const PUPPIES = ['Chimirico','Pipoca','Mimosa','Neblina','Sid','Negresco'];
+const COLORS  = ['#c85a2a','#3a7d6e','#5a6fa8','#9b5ea2','#c4960f','#2a6e7a'];
+
+const SEED_DATES   = ['25/05/2025','26/05/2025'];
+const SEED_WEIGHTS = [
+  [345,460,510,480,450,475],
+  [365,540,565,570,520,535]
+];
+
+const LS_KEY = 'filhotes_v1';
+
+// ─── STATE ────────────────────────────────────────────────────────
+let state = loadState();
+let chart = null;
+
+function defaultState() {
+  return { dates: [...SEED_DATES], weights: SEED_WEIGHTS.map(r => [...r]) };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return defaultState();
+}
+
+function saveState() {
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────
+function render() {
+  renderHeader();
+  renderCards();
+  renderInsights();
+  renderChart();
+  renderTable();
+  renderForm();
+}
+
+function renderHeader() {
+  const n = state.dates.length;
+  document.getElementById('headerSub').textContent =
+    `${n} pesagem${n!==1?'s':''} registrada${n!==1?'s':''} · última em ${state.dates[n-1]}`;
+}
+
+function renderCards() {
+  const grid = document.getElementById('pupGrid');
+  const last = state.weights[state.weights.length - 1];
+  const first = state.weights[0];
+  grid.innerHTML = PUPPIES.map((name, i) => {
+    const w = last[i];
+    const w0 = first[i];
+    const delta = w - w0;
+    const pct = ((delta / w0) * 100).toFixed(1);
+    const cls = delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-neu';
+    const sign = delta > 0 ? '+' : '';
+    return `<div class="pup-card">
+      <div class="pup-card" style="border-top:4px solid ${COLORS[i]};padding-top:14px;">
+        <div class="pup-name">${name}</div>
+        <div class="pup-weight">${w}</div>
+        <div class="pup-unit">gramas · dia ${state.dates[state.dates.length-1]}</div>
+        <span class="pup-delta ${cls}">${sign}${delta}g (${sign}${pct}%)</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // fix double card wrapper
+  grid.innerHTML = PUPPIES.map((name, i) => {
+    const w = last[i];
+    const w0 = first[i];
+    const delta = w - w0;
+    const pct = ((delta / w0) * 100).toFixed(1);
+    const cls = delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-neu';
+    const sign = delta > 0 ? '+' : '';
+    return `<div class="pup-card" style="border-top:4px solid ${COLORS[i]};">
+      <div class="pup-name">${name}</div>
+      <div class="pup-weight">${w}</div>
+      <div class="pup-unit">gramas · ${state.dates[state.dates.length-1]}</div>
+      <span class="pup-delta ${cls}">${sign}${delta}g (${sign}${pct}%)</span>
+    </div>`;
+  }).join('');
+}
+
+function renderInsights() {
+  const last = state.weights[state.weights.length - 1];
+  const first = state.weights[0];
+  const n = state.dates.length;
+
+  const deltas = PUPPIES.map((_, i) => last[i] - first[i]);
+  const pcts   = PUPPIES.map((_, i) => ((last[i] - first[i]) / first[i]) * 100);
+
+  const maxI  = pcts.indexOf(Math.max(...pcts));
+  const minI  = pcts.indexOf(Math.min(...pcts));
+  const avgW  = (last.reduce((a,b)=>a+b,0) / last.length).toFixed(0);
+  const avgG  = (deltas.reduce((a,b)=>a+b,0) / deltas.length).toFixed(0);
+  const days  = n - 1;
+
+  const bar = document.getElementById('insightsBar');
+  bar.innerHTML = `
+    <div class="insight-item">
+      <div class="insight-label">Maior ganho</div>
+      <div class="insight-value good">${PUPPIES[maxI]} +${pcts[maxI].toFixed(1)}%</div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-label">Menor ganho</div>
+      <div class="insight-value ${pcts[minI]<0?'warn':''}">${PUPPIES[minI]} ${pcts[minI]>=0?'+':''}${pcts[minI].toFixed(1)}%</div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-label">Peso médio atual</div>
+      <div class="insight-value">${avgW} g</div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-label">Ganho médio total</div>
+      <div class="insight-value good">+${avgG} g</div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-label">Dias de acompanhamento</div>
+      <div class="insight-value">${days} dia${days!==1?'s':''}</div>
+    </div>
+    <div class="insight-item">
+      <div class="insight-label">Pesagens registradas</div>
+      <div class="insight-value">${n}</div>
+    </div>
+  `;
+}
+
+function renderChart() {
+  const legend = document.getElementById('chartLegend');
+  legend.innerHTML = PUPPIES.map((n,i) =>
+    `<span class="legend-item"><span class="legend-swatch" style="background:${COLORS[i]}"></span>${n}</span>`
+  ).join('');
+
+  const labels = state.dates;
+  const datasets = PUPPIES.map((name, i) => ({
+    label: name,
+    data: state.weights.map(row => row[i]),
+    borderColor: COLORS[i],
+    backgroundColor: COLORS[i] + '22',
+    borderWidth: 2.5,
+    pointRadius: 5,
+    pointHoverRadius: 7,
+    tension: 0.3,
+    fill: false,
+  }));
+
+  if (chart) { chart.destroy(); }
+  chart = new Chart(document.getElementById('myChart'), {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}g`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: '#f0ece4' },
+          ticks: { font: { family: 'DM Mono', size: 11 }, color: '#7a7570' }
+        },
+        y: {
+          grid: { color: '#f0ece4' },
+          ticks: { font: { family: 'DM Mono', size: 11 }, color: '#7a7570',
+                   callback: v => v + 'g' }
+        }
+      }
+    }
+  });
+}
+
+function renderTable() {
+  const wrap = document.getElementById('tableWrap');
+  // Cabeçalho: Data + cada filhote (peso + delta)
+  let html = `<table><thead><tr><th>Data</th>`;
+  PUPPIES.forEach((n,i) => {
+    html += `<th><span class="dot" style="background:${COLORS[i]}"></span>${n}</th>`;
+  });
+  html += `</tr></thead><tbody>`;
+
+  state.dates.forEach((date, di) => {
+    html += `<tr><td class="td-name">${date}</td>`;
+    PUPPIES.forEach((_, pi) => {
+      const w = state.weights[di][pi];
+      let delta = '';
+      if (di > 0) {
+        const d = w - state.weights[di-1][pi];
+        const sign = d >= 0 ? '+' : '';
+        const cls = d > 0 ? 'delta-pos' : d < 0 ? 'delta-neg' : 'delta-neu';
+        delta = `<span class="pup-delta ${cls}" style="font-size:10px;padding:2px 5px;">${sign}${d}</span>`;
+      }
+      html += `<td>${w}g ${delta}</td>`;
+    });
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table>`;
+  wrap.innerHTML = html;
+}
+
+function renderForm() {
+  const wrap = document.getElementById('formFields');
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2,'0');
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const yyyy = today.getFullYear();
+  const todayStr = `${dd}/${mm}/${yyyy}`;
+
+  let html = `<div class="form-group">
+    <label>Data (DD/MM/AAAA)</label>
+    <input type="text" id="fDate" value="${todayStr}" placeholder="26/05/2025">
+  </div>`;
+  PUPPIES.forEach((name, i) => {
+    html += `<div class="form-group">
+      <label style="display:flex;align-items:center;gap:5px;"><span class="dot" style="background:${COLORS[i]}"></span>${name} (g)</label>
+      <input type="number" id="fw${i}" min="0" max="9999" placeholder="peso">
+    </div>`;
+  });
+  wrap.innerHTML = html;
+}
+
+function saveNewWeighing() {
+  const date = document.getElementById('fDate').value.trim();
+  if (!date) { showMsg('formMsg', 'Informe a data.', false); return; }
+
+  const weights = [];
+  for (let i=0; i<PUPPIES.length; i++) {
+    const v = parseInt(document.getElementById('fw'+i).value);
+    if (isNaN(v) || v <= 0) { showMsg('formMsg', `Informe o peso de ${PUPPIES[i]}.`, false); return; }
+    weights.push(v);
+  }
+
+  // Evitar data duplicada
+  if (state.dates.includes(date)) {
+    const idx = state.dates.indexOf(date);
+    state.weights[idx] = weights;
+    showMsg('formMsg', `Pesagem de ${date} atualizada!`, true);
+  } else {
+    state.dates.push(date);
+    state.weights.push(weights);
+    showMsg('formMsg', `Pesagem de ${date} salva!`, true);
+  }
+
+  saveState();
+  render();
+}
+
+function clearForm() {
+  PUPPIES.forEach((_,i) => { document.getElementById('fw'+i).value = ''; });
+}
+
+// ─── EXPORT / IMPORT ──────────────────────────────────────────────
+function encode(s) { return btoa(unescape(encodeURIComponent(s))); }
+function decode(s) { return decodeURIComponent(escape(atob(s.trim()))); }
+
+function buildExportText() {
+  // Texto legível + código embutido
+  const last = state.weights[state.weights.length - 1];
+  const first = state.weights[0];
+
+  let readable = `🐶 FILHOTES — PESAGEM (${state.dates[state.dates.length-1]})\n`;
+  readable += `${'─'.repeat(36)}\n`;
+  PUPPIES.forEach((name, i) => {
+    const delta = last[i] - first[i];
+    const pct = ((delta/first[i])*100).toFixed(1);
+    const sign = delta>=0?'+':'';
+    readable += `${name.padEnd(10)}: ${String(last[i]).padStart(4)}g  (${sign}${delta}g / ${sign}${pct}% total)\n`;
+  });
+  readable += `${'─'.repeat(36)}\n`;
+  readable += `📅 ${state.dates.length} pesagens · desde ${state.dates[0]}\n\n`;
+  readable += `[DADOS]\n${encode(JSON.stringify(state))}\n[/DADOS]`;
+  return readable;
+}
+
+function openExport() {
+  document.getElementById('exportText').value = buildExportText();
+  document.getElementById('exportMsg').textContent = '';
+  document.getElementById('modalExport').classList.add('open');
+}
+
+function copyExport() {
+  const ta = document.getElementById('exportText');
+  ta.select();
+  try {
+    navigator.clipboard.writeText(ta.value).then(() => {
+      showMsg('exportMsg', '✓ Copiado! Agora é só colar no WhatsApp.', true);
+    }).catch(() => {
+      document.execCommand('copy');
+      showMsg('exportMsg', '✓ Copiado!', true);
+    });
+  } catch(e) {
+    document.execCommand('copy');
+    showMsg('exportMsg', '✓ Copiado!', true);
+  }
+}
+
+function openImport() {
+  document.getElementById('importText').value = '';
+  document.getElementById('importMsg').textContent = '';
+  document.getElementById('modalImport').classList.add('open');
+}
+
+function applyImport() {
+  const raw = document.getElementById('importText').value;
+  const m = raw.match(/\[DADOS\]\s*([\s\S]+?)\s*\[\/DADOS\]/);
+  if (!m) { showMsg('importMsg', '✗ Código não encontrado. Certifique que copiou tudo.', false); return; }
+  try {
+    const data = JSON.parse(decode(m[1]));
+    if (!data.dates || !data.weights) throw new Error();
+    state = data;
+    saveState();
+    render();
+    closeModal('modalImport');
+    showMsg('formMsg', '✓ Dados importados com sucesso!', true);
+  } catch(e) {
+    showMsg('importMsg', '✗ Código inválido ou corrompido.', false);
+  }
+}
+
+function openDelete() {
+  const list = document.getElementById('deleteList');
+  document.getElementById('deleteMsg').textContent = '';
+  list.innerHTML = state.dates.map((date, di) => {
+    const isFirst = di === 0;
+    return `<div style="display:flex;align-items:center;justify-content:space-between;
+      padding:10px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--border);
+      background:${isFirst?'#faf8f4':'var(--card)'};">
+      <span style="font-family:'DM Mono',monospace;font-size:13px;color:${isFirst?'var(--muted)':'var(--text)'};">
+        ${date}${isFirst?' — base inicial':''}
+      </span>
+      ${isFirst
+        ? `<span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;">protegido</span>`
+        : `<button class="btn btn-outline-dark" style="padding:5px 12px;font-size:12px;color:var(--warn);border-color:#e8c4b8;"
+            onclick="deleteEntry(${di})">Excluir</button>`
+      }
+    </div>`;
+  }).join('');
+  document.getElementById('modalDelete').classList.add('open');
+}
+
+function deleteEntry(di) {
+  const date = state.dates[di];
+  state.dates.splice(di, 1);
+  state.weights.splice(di, 1);
+  saveState();
+  render();
+  openDelete();
+  showMsg('deleteMsg', `✓ Pesagem de ${date} excluída.`, true);
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function showMsg(id, txt, ok) {
+  const el = document.getElementById(id);
+  el.textContent = txt;
+  el.style.color = ok ? 'var(--good)' : 'var(--warn)';
+  setTimeout(() => { el.textContent = ''; }, 4000);
+}
+
+// fechar modal ao clicar fora
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if(e.target === el) el.classList.remove('open'); });
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
