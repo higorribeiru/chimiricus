@@ -3,30 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🐶 Pesagem dos Filhotes</title>
+<title>Pesagem dos Filhotes</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #f7f4ef;
-    --card: #ffffff;
-    --text: #1a1a1a;
-    --muted: #7a7570;
-    --border: #e5e0d8;
-    --accent: #c85a2a;
-    --accent2: #3a7d6e;
-    --accent3: #5a6fa8;
-    --warn: #c85a2a;
-    --good: #3a7d6e;
-    --yellow: #c4960f;
-    --pup1: #c85a2a;
-    --pup2: #3a7d6e;
-    --pup3: #5a6fa8;
-    --pup4: #9b5ea2;
-    --pup5: #c4960f;
-    --pup6: #2a6e7a;
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --card: #141414;
+    --card2: #1a1a1a;
+    --text: #e8e3da;
+    --muted: #555050;
+    --muted2: #888380;
+    --border: #222222;
+    --border2: #2e2e2e;
+    --accent: #c9a84c;
+    --accent-dim: #c9a84c22;
+    --good: #4a9b7e;
+    --good-dim: #4a9b7e22;
+    --warn: #c96b4a;
+    --warn-dim: #c96b4a22;
+    --dead: #3a3a3a;
     --radius: 12px;
     --radius-sm: 8px;
   }
@@ -39,297 +38,322 @@
     padding: 0 0 80px;
   }
 
+  /* ── HEADER ── */
   header {
-    background: var(--text);
-    color: #f7f4ef;
-    padding: 28px 32px 24px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 36px 24px;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
     gap: 16px;
     flex-wrap: wrap;
   }
-  header h1 {
-    font-size: 26px;
+  .header-left h1 {
+    font-size: 22px;
     font-weight: 600;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.3px;
+    color: var(--text);
   }
-  header .subtitle {
-    font-size: 13px;
-    color: #aaa49c;
-    margin-top: 4px;
+  .header-left h1 span {
+    color: var(--accent);
+  }
+  .header-left .subtitle {
+    font-size: 12px;
+    color: var(--muted2);
+    margin-top: 5px;
     font-family: 'DM Mono', monospace;
+    letter-spacing: .3px;
   }
-  header .header-actions {
+  .header-actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
   }
 
+  /* ── BUTTONS ── */
   .btn {
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     font-weight: 500;
-    padding: 9px 16px;
+    padding: 8px 15px;
     border-radius: var(--radius-sm);
-    border: 1.5px solid transparent;
+    border: 1px solid transparent;
     cursor: pointer;
     transition: all .15s;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     white-space: nowrap;
+    background: none;
   }
-  .btn-primary {
+  .btn-gold {
     background: var(--accent);
-    color: #fff;
+    color: #0a0a0a;
     border-color: var(--accent);
+    font-weight: 600;
   }
-  .btn-primary:hover { opacity: .88; }
-  .btn-outline {
-    background: transparent;
-    color: #f7f4ef;
-    border-color: #4a4540;
+  .btn-gold:hover { opacity: .88; }
+  .btn-ghost {
+    color: var(--muted2);
+    border-color: var(--border2);
   }
-  .btn-outline:hover { background: #2a2520; }
-  .btn-outline-dark {
-    background: transparent;
-    color: var(--text);
-    border-color: var(--border);
-  }
-  .btn-outline-dark:hover { background: #f0ece4; }
+  .btn-ghost:hover { color: var(--text); border-color: #444; background: #1e1e1e; }
   .btn-green {
     background: var(--good);
     color: #fff;
     border-color: var(--good);
+    font-weight: 600;
   }
   .btn-green:hover { opacity: .88; }
+  .btn-danger {
+    color: var(--warn);
+    border-color: #3a2018;
+    background: #1e1008;
+  }
+  .btn-danger:hover { background: #2a1810; border-color: #5a3020; }
+  .btn-sm { padding: 5px 11px; font-size: 12px; }
 
-  main { max-width: 960px; margin: 0 auto; padding: 32px 20px 0; }
+  main { max-width: 980px; margin: 0 auto; padding: 36px 20px 0; }
 
-  /* CARDS SUMÁRIO */
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 14px;
+  }
+
+  /* ── PUP CARDS ── */
   .pup-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
-    margin-bottom: 32px;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 10px;
+    margin-bottom: 28px;
   }
   .pup-card {
     background: var(--card);
     border-radius: var(--radius);
-    border: 1.5px solid var(--border);
+    border: 1px solid var(--border2);
     padding: 16px 14px 14px;
     position: relative;
     overflow: hidden;
+    transition: border-color .2s;
+  }
+  .pup-card:hover { border-color: #383838; }
+  .pup-card.inactive {
+    opacity: .45;
+    filter: grayscale(.8);
   }
   .pup-card::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 4px;
+    height: 3px;
+    background: var(--c, #444);
   }
-  .pup-accent { background: var(--c); }
-
+  .pup-badge {
+    position: absolute;
+    top: 10px; right: 10px;
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    background: #2a1a1a;
+    color: var(--warn);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid #3a2020;
+  }
   .pup-name {
     font-size: 13px;
     font-weight: 600;
     color: var(--text);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   .pup-weight {
     font-family: 'DM Mono', monospace;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 500;
     color: var(--text);
     line-height: 1;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
-  .pup-unit { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+  .pup-unit { font-size: 10px; color: var(--muted); margin-bottom: 10px; font-family: 'DM Mono', monospace; }
   .pup-delta {
     font-family: 'DM Mono', monospace;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
-    padding: 3px 8px;
+    padding: 3px 7px;
     border-radius: 4px;
     display: inline-block;
   }
-  .delta-pos { background: #e8f4f0; color: #2a6b5c; }
-  .delta-neg { background: #fceee8; color: #a03820; }
-  .delta-neu { background: #f0ece4; color: var(--muted); }
+  .delta-pos { background: var(--good-dim); color: #5cc49e; }
+  .delta-neg { background: var(--warn-dim); color: #e08060; }
+  .delta-neu { background: #1e1e1e; color: var(--muted2); }
 
-  /* INSIGHTS */
+  /* ── INSIGHTS ── */
   .insights-bar {
     background: var(--card);
-    border: 1.5px solid var(--border);
+    border: 1px solid var(--border2);
     border-radius: var(--radius);
-    padding: 18px 22px;
-    margin-bottom: 32px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
     display: flex;
     flex-wrap: wrap;
-    gap: 24px;
+    gap: 28px;
   }
-  .insight-item {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    min-width: 130px;
-  }
+  .insight-item { display: flex; flex-direction: column; gap: 4px; min-width: 130px; }
   .insight-label {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--muted);
     font-family: 'DM Mono', monospace;
     text-transform: uppercase;
-    letter-spacing: .5px;
+    letter-spacing: .8px;
   }
-  .insight-value {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text);
-  }
+  .insight-value { font-size: 15px; font-weight: 500; color: var(--text); }
   .insight-value.good { color: var(--good); }
   .insight-value.warn { color: var(--warn); }
+  .insight-value.gold { color: var(--accent); }
 
-  /* GRÁFICO */
+  /* ── GRÁFICO ── */
   .chart-card {
     background: var(--card);
-    border: 1.5px solid var(--border);
+    border: 1px solid var(--border2);
     border-radius: var(--radius);
-    padding: 22px;
-    margin-bottom: 32px;
+    padding: 24px;
+    margin-bottom: 28px;
   }
-  .chart-card h2 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .5px;
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 18px;
-    font-family: 'DM Mono', monospace;
+    gap: 12px;
+    flex-wrap: wrap;
   }
   #chartWrap { position: relative; width: 100%; height: 300px; }
-
-  /* TABELA */
-  .table-card {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 22px;
-    margin-bottom: 32px;
-    overflow-x: auto;
+  .chart-legend {
+    display: flex; flex-wrap: wrap; gap: 12px;
   }
-  .table-card h2 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    margin-bottom: 18px;
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--muted2);
     font-family: 'DM Mono', monospace;
   }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
+  .legend-swatch { width: 18px; height: 2.5px; border-radius: 2px; }
+
+  /* ── TABELA ── */
+  .table-card {
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 28px;
+    overflow-x: auto;
   }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
   thead th {
     text-align: left;
     padding: 8px 12px;
-    font-size: 11px;
+    font-size: 10px;
     font-family: 'DM Mono', monospace;
     color: var(--muted);
-    border-bottom: 1.5px solid var(--border);
+    border-bottom: 1px solid var(--border2);
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    white-space: nowrap;
   }
   tbody td {
     padding: 10px 12px;
-    border-bottom: 1px solid #f0ece4;
+    border-bottom: 1px solid var(--border);
     font-family: 'DM Mono', monospace;
     color: var(--text);
+    white-space: nowrap;
   }
   tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover td { background: #faf8f4; }
-  .td-name { font-family: 'DM Sans', sans-serif; font-weight: 500; }
-  .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    display: inline-block; margin-right: 6px;
-    vertical-align: middle;
-  }
+  tbody tr:hover td { background: #181818; }
+  .td-name { font-family: 'DM Sans', sans-serif; font-weight: 500; color: var(--muted2); }
+  .td-inactive { color: var(--muted) !important; font-style: italic; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 5px; vertical-align: middle; }
 
-  /* FORMULÁRIO NOVA PESAGEM */
+  /* ── FORM ── */
   .form-card {
     background: var(--card);
-    border: 1.5px solid var(--border);
+    border: 1px solid var(--border2);
     border-radius: var(--radius);
-    padding: 22px;
-    margin-bottom: 32px;
-  }
-  .form-card h2 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    margin-bottom: 18px;
-    font-family: 'DM Mono', monospace;
+    padding: 24px;
+    margin-bottom: 28px;
   }
   .form-row {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
     align-items: end;
   }
-  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
   .form-group label {
-    font-size: 11px;
+    font-size: 10px;
     font-family: 'DM Mono', monospace;
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: .4px;
+    letter-spacing: .6px;
   }
   .form-group input {
     font-family: 'DM Mono', monospace;
     font-size: 14px;
     padding: 9px 12px;
-    border: 1.5px solid var(--border);
+    border: 1px solid var(--border2);
     border-radius: var(--radius-sm);
-    background: var(--bg);
+    background: var(--bg2);
     color: var(--text);
     outline: none;
     transition: border-color .15s;
   }
   .form-group input:focus { border-color: var(--accent); }
-  .form-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+  .form-group input:disabled { opacity: .3; cursor: not-allowed; }
+  .form-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .msg-ok {
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    margin-top: 12px;
+    min-height: 18px;
+  }
 
-  /* MODAL COPIAR/COLAR */
+  /* ── MODAL ── */
   .modal-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.55);
+    background: rgba(0,0,0,.75);
     z-index: 100;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    backdrop-filter: blur(2px);
   }
   .modal-overlay.open { display: flex; }
   .modal {
-    background: var(--card);
+    background: var(--card2);
+    border: 1px solid var(--border2);
     border-radius: var(--radius);
     padding: 28px;
-    max-width: 540px;
+    max-width: 520px;
     width: 100%;
-    box-shadow: 0 8px 40px rgba(0,0,0,.18);
+    box-shadow: 0 24px 80px rgba(0,0,0,.6);
   }
   .modal h3 {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
     margin-bottom: 6px;
+    color: var(--text);
   }
   .modal p {
     font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 16px;
+    color: var(--muted2);
+    margin-bottom: 18px;
     line-height: 1.6;
   }
   .modal textarea {
@@ -337,7 +361,7 @@
     font-family: 'DM Mono', monospace;
     font-size: 12px;
     padding: 12px;
-    border: 1.5px solid var(--border);
+    border: 1px solid var(--border2);
     border-radius: var(--radius-sm);
     background: var(--bg);
     color: var(--text);
@@ -348,36 +372,53 @@
     overflow-x: auto;
     line-height: 1.6;
   }
-  .modal-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-  .msg-ok {
-    font-size: 13px;
-    color: var(--good);
-    font-family: 'DM Mono', monospace;
-    margin-top: 8px;
-    min-height: 20px;
-  }
+  .modal-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .modal-divider { height: 1px; background: var(--border); margin: 18px 0; }
 
-  /* LEGENDA GRÁFICO */
-  .chart-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  .legend-item {
+  /* ── MANAGE DOGS MODAL ── */
+  .dog-manage-item {
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 12px;
-    color: var(--muted);
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: var(--bg2);
+    margin-bottom: 8px;
+    transition: border-color .15s;
   }
-  .legend-swatch {
-    width: 20px;
-    height: 3px;
+  .dog-manage-item:hover { border-color: #383838; }
+  .dog-manage-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dog-color-bar {
+    width: 3px;
+    height: 28px;
     border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .dog-manage-name {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .dog-manage-name.is-inactive {
+    color: var(--muted2);
+    text-decoration: line-through;
+  }
+  .dog-manage-status {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--warn);
+    margin-top: 2px;
   }
 
-  @media (max-width: 500px) {
+  /* ── DIVIDER ── */
+  .section-divider { height: 1px; background: var(--border); margin: 4px 0 28px; }
+
+  @media (max-width: 600px) {
     header { padding: 20px 16px; }
     main { padding: 20px 12px 0; }
     .chart-card, .table-card, .form-card, .insights-bar { padding: 16px 14px; }
@@ -387,60 +428,83 @@
 <body>
 
 <header>
-  <div>
-    <h1>🐶 Filhotes — Peso</h1>
+  <div class="header-left">
+    <h1>Filhotes <span>—</span> Pesagem</h1>
     <div class="subtitle" id="headerSub">carregando...</div>
   </div>
   <div class="header-actions">
-    <button class="btn btn-outline" onclick="openExport()">&#x2197; Compartilhar dados</button>
-    <button class="btn btn-outline" onclick="openImport()">&#x2193; Importar dados</button>
-    <button class="btn btn-outline" onclick="openDelete()">&#x2715; Excluir registro</button>
+    <button class="btn btn-ghost" onclick="openManage()">Gerenciar filhotes</button>
+    <button class="btn btn-ghost" onclick="openDelete()">Excluir registro</button>
+    <button class="btn btn-ghost" onclick="openImport()">Importar</button>
+    <button class="btn btn-ghost" onclick="openExport()">Compartilhar</button>
   </div>
 </header>
 
 <main>
-  <!-- CARDS -->
+  <div class="section-title" id="gridTitle">Filhotes ativos</div>
   <div class="pup-grid" id="pupGrid"></div>
 
-  <!-- INSIGHTS -->
   <div class="insights-bar" id="insightsBar"></div>
 
-  <!-- GRÁFICO -->
   <div class="chart-card">
-    <h2>Evolução do peso (g)</h2>
-    <div class="chart-legend" id="chartLegend"></div>
+    <div class="card-header">
+      <div class="section-title" style="margin:0">Evolução do peso (g)</div>
+      <div class="chart-legend" id="chartLegend"></div>
+    </div>
     <div id="chartWrap">
-      <canvas id="myChart" role="img" aria-label="Gráfico de linhas mostrando evolução de peso dos 6 filhotes ao longo dos dias de pesagem.">Evolução de peso dos filhotes.</canvas>
+      <canvas id="myChart"></canvas>
     </div>
   </div>
 
-  <!-- TABELA -->
   <div class="table-card">
-    <h2>Histórico de pesagens</h2>
+    <div class="section-title">Histórico de pesagens</div>
     <div id="tableWrap"></div>
   </div>
 
-  <!-- FORM -->
   <div class="form-card">
-    <h2>Registrar nova pesagem</h2>
+    <div class="section-title">Registrar nova pesagem</div>
     <div class="form-row" id="formFields"></div>
     <div class="form-actions">
-      <button class="btn btn-primary" onclick="saveNewWeighing()">Salvar pesagem</button>
-      <button class="btn btn-outline-dark" onclick="clearForm()">Limpar</button>
+      <button class="btn btn-gold" onclick="saveNewWeighing()">Salvar pesagem</button>
+      <button class="btn btn-ghost" onclick="clearForm()">Limpar</button>
     </div>
     <div class="msg-ok" id="formMsg"></div>
   </div>
 </main>
 
+<!-- MODAL GERENCIAR FILHOTES -->
+<div class="modal-overlay" id="modalManage">
+  <div class="modal">
+    <h3>Gerenciar filhotes</h3>
+    <p>Desative um filhote em caso de óbito. O histórico é preservado, mas ele não aparecerá em novas pesagens.</p>
+    <div id="manageList"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalManage')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR ÓBITO -->
+<div class="modal-overlay" id="modalConfirmDeath">
+  <div class="modal">
+    <h3 id="confirmDeathTitle">Confirmar óbito</h3>
+    <p id="confirmDeathText"></p>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="confirmDeathBtn">Confirmar óbito</button>
+      <button class="btn btn-ghost" onclick="closeModal('modalConfirmDeath')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL EXPORTAR -->
 <div class="modal-overlay" id="modalExport">
   <div class="modal">
-    <h3>📤 Compartilhar dados</h3>
-    <p>Copie o texto abaixo e mande no WhatsApp. Quem receber cola no campo "Importar dados" e clica em Aplicar.</p>
+    <h3>Compartilhar dados</h3>
+    <p>Copie o texto abaixo e mande no WhatsApp. Quem receber cola no campo "Importar" e clica em Aplicar.</p>
     <textarea id="exportText" readonly></textarea>
     <div class="modal-actions">
-      <button class="btn btn-primary" onclick="copyExport()">Copiar tudo</button>
-      <button class="btn btn-outline-dark" onclick="closeModal('modalExport')">Fechar</button>
+      <button class="btn btn-gold" onclick="copyExport()">Copiar tudo</button>
+      <button class="btn btn-ghost" onclick="closeModal('modalExport')">Fechar</button>
     </div>
     <div class="msg-ok" id="exportMsg"></div>
   </div>
@@ -449,12 +513,12 @@
 <!-- MODAL IMPORTAR -->
 <div class="modal-overlay" id="modalImport">
   <div class="modal">
-    <h3>📥 Importar dados</h3>
-    <p>Cole aqui o código que você recebeu. Ele vai substituir todos os dados atuais neste dispositivo.</p>
+    <h3>Importar dados</h3>
+    <p>Cole aqui o código recebido. Ele vai substituir todos os dados atuais neste dispositivo.</p>
     <textarea id="importText" placeholder="Cole o código aqui..."></textarea>
     <div class="modal-actions">
       <button class="btn btn-green" onclick="applyImport()">Aplicar e salvar</button>
-      <button class="btn btn-outline-dark" onclick="closeModal('modalImport')">Cancelar</button>
+      <button class="btn btn-ghost" onclick="closeModal('modalImport')">Cancelar</button>
     </div>
     <div class="msg-ok" id="importMsg"></div>
   </div>
@@ -463,42 +527,52 @@
 <!-- MODAL EXCLUIR PESAGEM -->
 <div class="modal-overlay" id="modalDelete">
   <div class="modal">
-    <h3>🗑 Excluir registro</h3>
-    <p>Selecione a data que deseja remover. A primeira pesagem não pode ser excluída (ela é a base de referência).</p>
-    <div id="deleteList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:4px;"></div>
-    <div class="modal-actions" style="margin-top:12px;">
-      <button class="btn btn-outline-dark" onclick="closeModal('modalDelete')">Fechar</button>
+    <h3>Excluir registro</h3>
+    <p>Selecione a data que deseja remover. A primeira pesagem não pode ser excluída — ela é a base de referência.</p>
+    <div id="deleteList" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn btn-ghost" onclick="closeModal('modalDelete')">Fechar</button>
     </div>
     <div class="msg-ok" id="deleteMsg"></div>
   </div>
 </div>
 
 <script>
-// ─── DADOS INICIAIS ───────────────────────────────────────────────
+// ─── DADOS ────────────────────────────────────────────────────────────────────
 const PUPPIES = ['Chimirico','Pipoca','Mimosa','Neblina','Sid','Negresco'];
-const COLORS  = ['#c85a2a','#3a7d6e','#5a6fa8','#9b5ea2','#c4960f','#2a6e7a'];
+const COLORS  = ['#d4784a','#4ab89a','#6888d0','#b878c8','#d4a843','#38b0c8'];
 
 const SEED_DATES   = ['25/05/2025','26/05/2025'];
 const SEED_WEIGHTS = [
-  [345,460,510,480,450,475],
-  [365,540,565,570,520,535]
+  [345, 460, 510, 480, 450, 475],
+  [365, 540, 565, 570, 520, 535]
 ];
 
-const LS_KEY = 'filhotes_v1';
+const LS_KEY = 'filhotes_v2';
 
-// ─── STATE ────────────────────────────────────────────────────────
+// ─── STATE ────────────────────────────────────────────────────────────────────
 let state = loadState();
 let chart = null;
 
 function defaultState() {
-  return { dates: [...SEED_DATES], weights: SEED_WEIGHTS.map(r => [...r]) };
+  return {
+    dates: [...SEED_DATES],
+    weights: SEED_WEIGHTS.map(r => [...r]),
+    inactive: PUPPIES.map(() => false),
+    deathDates: PUPPIES.map(() => null),
+  };
 }
 
 function loadState() {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch(e){}
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (!s.inactive) s.inactive = PUPPIES.map(() => false);
+      if (!s.deathDates) s.deathDates = PUPPIES.map(() => null);
+      return s;
+    }
+  } catch(e) {}
   return defaultState();
 }
 
@@ -506,7 +580,7 @@ function saveState() {
   localStorage.setItem(LS_KEY, JSON.stringify(state));
 }
 
-// ─── RENDER ───────────────────────────────────────────────────────
+// ─── RENDER ───────────────────────────────────────────────────────────────────
 function render() {
   renderHeader();
   renderCards();
@@ -518,40 +592,27 @@ function render() {
 
 function renderHeader() {
   const n = state.dates.length;
+  const activeCount = state.inactive.filter(v => !v).length;
   document.getElementById('headerSub').textContent =
-    `${n} pesagem${n!==1?'s':''} registrada${n!==1?'s':''} · última em ${state.dates[n-1]}`;
+    `${n} pesagem${n!==1?'s':''} · última em ${state.dates[n-1]} · ${activeCount} de ${PUPPIES.length} filhotes ativos`;
 }
 
 function renderCards() {
   const grid = document.getElementById('pupGrid');
   const last = state.weights[state.weights.length - 1];
   const first = state.weights[0];
-  grid.innerHTML = PUPPIES.map((name, i) => {
-    const w = last[i];
-    const w0 = first[i];
-    const delta = w - w0;
-    const pct = ((delta / w0) * 100).toFixed(1);
-    const cls = delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-neu';
-    const sign = delta > 0 ? '+' : '';
-    return `<div class="pup-card">
-      <div class="pup-card" style="border-top:4px solid ${COLORS[i]};padding-top:14px;">
-        <div class="pup-name">${name}</div>
-        <div class="pup-weight">${w}</div>
-        <div class="pup-unit">gramas · dia ${state.dates[state.dates.length-1]}</div>
-        <span class="pup-delta ${cls}">${sign}${delta}g (${sign}${pct}%)</span>
-      </div>
-    </div>`;
-  }).join('');
 
-  // fix double card wrapper
   grid.innerHTML = PUPPIES.map((name, i) => {
+    const isInactive = state.inactive[i];
     const w = last[i];
     const w0 = first[i];
     const delta = w - w0;
     const pct = ((delta / w0) * 100).toFixed(1);
     const cls = delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-neu';
     const sign = delta > 0 ? '+' : '';
-    return `<div class="pup-card" style="border-top:4px solid ${COLORS[i]};">
+    const badge = isInactive ? `<div class="pup-badge">† óbito</div>` : '';
+    return `<div class="pup-card${isInactive?' inactive':''}" style="--c:${COLORS[i]}">
+      ${badge}
       <div class="pup-name">${name}</div>
       <div class="pup-weight">${w}</div>
       <div class="pup-unit">gramas · ${state.dates[state.dates.length-1]}</div>
@@ -565,28 +626,40 @@ function renderInsights() {
   const first = state.weights[0];
   const n = state.dates.length;
 
-  const deltas = PUPPIES.map((_, i) => last[i] - first[i]);
-  const pcts   = PUPPIES.map((_, i) => ((last[i] - first[i]) / first[i]) * 100);
+  const activeIdx = PUPPIES.map((_, i) => i).filter(i => !state.inactive[i]);
 
-  const maxI  = pcts.indexOf(Math.max(...pcts));
-  const minI  = pcts.indexOf(Math.min(...pcts));
-  const avgW  = (last.reduce((a,b)=>a+b,0) / last.length).toFixed(0);
-  const avgG  = (deltas.reduce((a,b)=>a+b,0) / deltas.length).toFixed(0);
-  const days  = n - 1;
+  if (activeIdx.length === 0) {
+    document.getElementById('insightsBar').innerHTML = `
+      <div class="insight-item"><div class="insight-label">Status</div>
+      <div class="insight-value warn">Nenhum filhote ativo</div></div>`;
+    return;
+  }
 
-  const bar = document.getElementById('insightsBar');
-  bar.innerHTML = `
+  const deltas = activeIdx.map(i => last[i] - first[i]);
+  const pcts   = activeIdx.map(i => ((last[i] - first[i]) / first[i]) * 100);
+
+  const maxLocal = pcts.indexOf(Math.max(...pcts));
+  const minLocal = pcts.indexOf(Math.min(...pcts));
+  const maxI = activeIdx[maxLocal];
+  const minI = activeIdx[minLocal];
+
+  const activeLast = activeIdx.map(i => last[i]);
+  const avgW = (activeLast.reduce((a,b)=>a+b,0) / activeLast.length).toFixed(0);
+  const avgG = (deltas.reduce((a,b)=>a+b,0) / deltas.length).toFixed(0);
+  const days = n - 1;
+
+  document.getElementById('insightsBar').innerHTML = `
     <div class="insight-item">
       <div class="insight-label">Maior ganho</div>
-      <div class="insight-value good">${PUPPIES[maxI]} +${pcts[maxI].toFixed(1)}%</div>
+      <div class="insight-value good">${PUPPIES[maxI]} +${pcts[maxLocal].toFixed(1)}%</div>
     </div>
     <div class="insight-item">
       <div class="insight-label">Menor ganho</div>
-      <div class="insight-value ${pcts[minI]<0?'warn':''}">${PUPPIES[minI]} ${pcts[minI]>=0?'+':''}${pcts[minI].toFixed(1)}%</div>
+      <div class="insight-value ${pcts[minLocal]<0?'warn':''}">${PUPPIES[minI]} ${pcts[minLocal]>=0?'+':''}${pcts[minLocal].toFixed(1)}%</div>
     </div>
     <div class="insight-item">
       <div class="insight-label">Peso médio atual</div>
-      <div class="insight-value">${avgW} g</div>
+      <div class="insight-value gold">${avgW} g</div>
     </div>
     <div class="insight-item">
       <div class="insight-label">Ganho médio total</div>
@@ -605,47 +678,51 @@ function renderInsights() {
 
 function renderChart() {
   const legend = document.getElementById('chartLegend');
-  legend.innerHTML = PUPPIES.map((n,i) =>
-    `<span class="legend-item"><span class="legend-swatch" style="background:${COLORS[i]}"></span>${n}</span>`
-  ).join('');
+  legend.innerHTML = PUPPIES.map((n, i) => {
+    const dim = state.inactive[i] ? ' style="opacity:.35"' : '';
+    return `<span class="legend-item"${dim}><span class="legend-swatch" style="background:${COLORS[i]}"></span>${n}</span>`;
+  }).join('');
 
-  const labels = state.dates;
   const datasets = PUPPIES.map((name, i) => ({
     label: name,
-    data: state.weights.map(row => row[i]),
-    borderColor: COLORS[i],
-    backgroundColor: COLORS[i] + '22',
-    borderWidth: 2.5,
-    pointRadius: 5,
+    data: state.weights.map(row => row[i] ?? null),
+    borderColor: state.inactive[i] ? COLORS[i] + '44' : COLORS[i],
+    backgroundColor: COLORS[i] + '18',
+    borderWidth: state.inactive[i] ? 1.5 : 2.5,
+    borderDash: state.inactive[i] ? [4, 3] : [],
+    pointRadius: state.inactive[i] ? 3 : 5,
     pointHoverRadius: 7,
-    tension: 0.3,
+    tension: 0.35,
     fill: false,
+    spanGaps: false,
   }));
 
-  if (chart) { chart.destroy(); }
+  if (chart) chart.destroy();
   chart = new Chart(document.getElementById('myChart'), {
     type: 'line',
-    data: { labels, datasets },
+    data: { labels: state.dates, datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
         tooltip: {
-          callbacks: {
-            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}g`
-          }
+          backgroundColor: '#1a1a1a',
+          borderColor: '#2e2e2e',
+          borderWidth: 1,
+          titleColor: '#888',
+          bodyColor: '#e8e3da',
+          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y ?? '—'}g` }
         }
       },
       scales: {
         x: {
-          grid: { color: '#f0ece4' },
-          ticks: { font: { family: 'DM Mono', size: 11 }, color: '#7a7570' }
+          grid: { color: '#1e1e1e' },
+          ticks: { font: { family: 'DM Mono', size: 11 }, color: '#505050' }
         },
         y: {
-          grid: { color: '#f0ece4' },
-          ticks: { font: { family: 'DM Mono', size: 11 }, color: '#7a7570',
-                   callback: v => v + 'g' }
+          grid: { color: '#1e1e1e' },
+          ticks: { font: { family: 'DM Mono', size: 11 }, color: '#505050', callback: v => v + 'g' }
         }
       }
     }
@@ -653,11 +730,10 @@ function renderChart() {
 }
 
 function renderTable() {
-  const wrap = document.getElementById('tableWrap');
-  // Cabeçalho: Data + cada filhote (peso + delta)
   let html = `<table><thead><tr><th>Data</th>`;
-  PUPPIES.forEach((n,i) => {
-    html += `<th><span class="dot" style="background:${COLORS[i]}"></span>${n}</th>`;
+  PUPPIES.forEach((n, i) => {
+    const dim = state.inactive[i] ? ' style="opacity:.4"' : '';
+    html += `<th${dim}><span class="dot" style="background:${COLORS[i]}"></span>${n}</th>`;
   });
   html += `</tr></thead><tbody>`;
 
@@ -665,20 +741,25 @@ function renderTable() {
     html += `<tr><td class="td-name">${date}</td>`;
     PUPPIES.forEach((_, pi) => {
       const w = state.weights[di][pi];
+      const isNull = w === null || w === undefined;
       let delta = '';
-      if (di > 0) {
-        const d = w - state.weights[di-1][pi];
-        const sign = d >= 0 ? '+' : '';
-        const cls = d > 0 ? 'delta-pos' : d < 0 ? 'delta-neg' : 'delta-neu';
-        delta = `<span class="pup-delta ${cls}" style="font-size:10px;padding:2px 5px;">${sign}${d}</span>`;
+      if (!isNull && di > 0) {
+        const prev = state.weights[di-1][pi];
+        if (prev !== null && prev !== undefined) {
+          const d = w - prev;
+          const sign = d >= 0 ? '+' : '';
+          const cls = d > 0 ? 'delta-pos' : d < 0 ? 'delta-neg' : 'delta-neu';
+          delta = ` <span class="pup-delta ${cls}" style="font-size:10px;padding:2px 5px;">${sign}${d}</span>`;
+        }
       }
-      html += `<td>${w}g ${delta}</td>`;
+      const tdCls = state.inactive[pi] ? ' class="td-inactive"' : '';
+      html += `<td${tdCls}>${isNull ? '—' : w + 'g' + delta}</td>`;
     });
     html += `</tr>`;
   });
 
   html += `</tbody></table>`;
-  wrap.innerHTML = html;
+  document.getElementById('tableWrap').innerHTML = html;
 }
 
 function renderForm() {
@@ -691,12 +772,15 @@ function renderForm() {
 
   let html = `<div class="form-group">
     <label>Data (DD/MM/AAAA)</label>
-    <input type="text" id="fDate" value="${todayStr}" placeholder="26/05/2025">
+    <input type="text" id="fDate" value="${todayStr}" placeholder="DD/MM/AAAA">
   </div>`;
   PUPPIES.forEach((name, i) => {
+    const inactive = state.inactive[i];
     html += `<div class="form-group">
-      <label style="display:flex;align-items:center;gap:5px;"><span class="dot" style="background:${COLORS[i]}"></span>${name} (g)</label>
-      <input type="number" id="fw${i}" min="0" max="9999" placeholder="peso">
+      <label style="display:flex;align-items:center;gap:5px;">
+        <span class="dot" style="background:${inactive?'#444':COLORS[i]}"></span>${name} (g)${inactive?' †':''}
+      </label>
+      <input type="number" id="fw${i}" min="0" max="9999" placeholder="${inactive?'óbito':'peso'}"${inactive?' disabled':''}>
     </div>`;
   });
   wrap.innerHTML = html;
@@ -707,13 +791,16 @@ function saveNewWeighing() {
   if (!date) { showMsg('formMsg', 'Informe a data.', false); return; }
 
   const weights = [];
-  for (let i=0; i<PUPPIES.length; i++) {
+  for (let i = 0; i < PUPPIES.length; i++) {
+    if (state.inactive[i]) {
+      weights.push(null);
+      continue;
+    }
     const v = parseInt(document.getElementById('fw'+i).value);
     if (isNaN(v) || v <= 0) { showMsg('formMsg', `Informe o peso de ${PUPPIES[i]}.`, false); return; }
     weights.push(v);
   }
 
-  // Evitar data duplicada
   if (state.dates.includes(date)) {
     const idx = state.dates.indexOf(date);
     state.weights[idx] = weights;
@@ -729,28 +816,91 @@ function saveNewWeighing() {
 }
 
 function clearForm() {
-  PUPPIES.forEach((_,i) => { document.getElementById('fw'+i).value = ''; });
+  PUPPIES.forEach((_, i) => {
+    const el = document.getElementById('fw'+i);
+    if (el && !el.disabled) el.value = '';
+  });
 }
 
-// ─── EXPORT / IMPORT ──────────────────────────────────────────────
+// ─── MANAGE (ÓBITO) ───────────────────────────────────────────────────────────
+function openManage() {
+  renderManageList();
+  document.getElementById('modalManage').classList.add('open');
+}
+
+function renderManageList() {
+  const list = document.getElementById('manageList');
+  list.innerHTML = PUPPIES.map((name, i) => {
+    const inactive = state.inactive[i];
+    const deathDate = state.deathDates[i];
+    return `<div class="dog-manage-item">
+      <div class="dog-manage-left">
+        <div class="dog-color-bar" style="background:${inactive?'#333':COLORS[i]}"></div>
+        <div>
+          <div class="dog-manage-name${inactive?' is-inactive':''}">${name}</div>
+          ${inactive && deathDate ? `<div class="dog-manage-status">† falecido em ${deathDate}</div>` : ''}
+          ${inactive && !deathDate ? `<div class="dog-manage-status">† inativo</div>` : ''}
+        </div>
+      </div>
+      ${inactive
+        ? `<button class="btn btn-ghost btn-sm" onclick="reactivateDog(${i})">Reativar</button>`
+        : `<button class="btn btn-danger btn-sm" onclick="askDeathConfirm(${i})">Registrar óbito</button>`
+      }
+    </div>`;
+  }).join('');
+}
+
+function askDeathConfirm(i) {
+  const name = PUPPIES[i];
+  document.getElementById('confirmDeathTitle').textContent = `Registrar óbito — ${name}`;
+  document.getElementById('confirmDeathText').textContent =
+    `Tem certeza que deseja marcar ${name} como falecido? O histórico de pesagens será preservado, mas ${name} não aparecerá em novos registros.`;
+  document.getElementById('confirmDeathBtn').onclick = () => confirmDeath(i);
+  document.getElementById('modalConfirmDeath').classList.add('open');
+}
+
+function confirmDeath(i) {
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2,'0');
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const yyyy = today.getFullYear();
+  state.inactive[i] = true;
+  state.deathDates[i] = `${dd}/${mm}/${yyyy}`;
+  saveState();
+  closeModal('modalConfirmDeath');
+  renderManageList();
+  render();
+}
+
+function reactivateDog(i) {
+  state.inactive[i] = false;
+  state.deathDates[i] = null;
+  saveState();
+  renderManageList();
+  render();
+}
+
+// ─── EXPORT / IMPORT ──────────────────────────────────────────────────────────
 function encode(s) { return btoa(unescape(encodeURIComponent(s))); }
 function decode(s) { return decodeURIComponent(escape(atob(s.trim()))); }
 
 function buildExportText() {
-  // Texto legível + código embutido
   const last = state.weights[state.weights.length - 1];
   const first = state.weights[0];
 
-  let readable = `🐶 FILHOTES — PESAGEM (${state.dates[state.dates.length-1]})\n`;
+  let readable = `FILHOTES — PESAGEM (${state.dates[state.dates.length-1]})\n`;
   readable += `${'─'.repeat(36)}\n`;
   PUPPIES.forEach((name, i) => {
-    const delta = last[i] - first[i];
-    const pct = ((delta/first[i])*100).toFixed(1);
+    if (state.inactive[i]) { readable += `${name.padEnd(10)}: † falecido\n`; return; }
+    const w = last[i]; const w0 = first[i];
+    if (w === null || w0 === null) return;
+    const delta = w - w0;
+    const pct = ((delta/w0)*100).toFixed(1);
     const sign = delta>=0?'+':'';
-    readable += `${name.padEnd(10)}: ${String(last[i]).padStart(4)}g  (${sign}${delta}g / ${sign}${pct}% total)\n`;
+    readable += `${name.padEnd(10)}: ${String(w).padStart(4)}g  (${sign}${delta}g / ${sign}${pct}%)\n`;
   });
   readable += `${'─'.repeat(36)}\n`;
-  readable += `📅 ${state.dates.length} pesagens · desde ${state.dates[0]}\n\n`;
+  readable += `${state.dates.length} pesagens · desde ${state.dates[0]}\n\n`;
   readable += `[DADOS]\n${encode(JSON.stringify(state))}\n[/DADOS]`;
   return readable;
 }
@@ -764,17 +914,12 @@ function openExport() {
 function copyExport() {
   const ta = document.getElementById('exportText');
   ta.select();
-  try {
-    navigator.clipboard.writeText(ta.value).then(() => {
-      showMsg('exportMsg', '✓ Copiado! Agora é só colar no WhatsApp.', true);
-    }).catch(() => {
-      document.execCommand('copy');
-      showMsg('exportMsg', '✓ Copiado!', true);
-    });
-  } catch(e) {
+  navigator.clipboard.writeText(ta.value).then(() => {
+    showMsg('exportMsg', '✓ Copiado! Agora é só colar no WhatsApp.', true);
+  }).catch(() => {
     document.execCommand('copy');
     showMsg('exportMsg', '✓ Copiado!', true);
-  }
+  });
 }
 
 function openImport() {
@@ -790,6 +935,8 @@ function applyImport() {
   try {
     const data = JSON.parse(decode(m[1]));
     if (!data.dates || !data.weights) throw new Error();
+    if (!data.inactive) data.inactive = PUPPIES.map(() => false);
+    if (!data.deathDates) data.deathDates = PUPPIES.map(() => null);
     state = data;
     saveState();
     render();
@@ -800,21 +947,21 @@ function applyImport() {
   }
 }
 
+// ─── DELETE ───────────────────────────────────────────────────────────────────
 function openDelete() {
   const list = document.getElementById('deleteList');
   document.getElementById('deleteMsg').textContent = '';
   list.innerHTML = state.dates.map((date, di) => {
     const isFirst = di === 0;
     return `<div style="display:flex;align-items:center;justify-content:space-between;
-      padding:10px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--border);
-      background:${isFirst?'#faf8f4':'var(--card)'};">
+      padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border2);
+      background:${isFirst?'#0e0e0e':'var(--bg2)'};">
       <span style="font-family:'DM Mono',monospace;font-size:13px;color:${isFirst?'var(--muted)':'var(--text)'};">
         ${date}${isFirst?' — base inicial':''}
       </span>
       ${isFirst
-        ? `<span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;">protegido</span>`
-        : `<button class="btn btn-outline-dark" style="padding:5px 12px;font-size:12px;color:var(--warn);border-color:#e8c4b8;"
-            onclick="deleteEntry(${di})">Excluir</button>`
+        ? `<span style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.5px">PROTEGIDO</span>`
+        : `<button class="btn btn-danger btn-sm" onclick="deleteEntry(${di})">Excluir</button>`
       }
     </div>`;
   }).join('');
@@ -831,6 +978,7 @@ function deleteEntry(di) {
   showMsg('deleteMsg', `✓ Pesagem de ${date} excluída.`, true);
 }
 
+// ─── UTILS ────────────────────────────────────────────────────────────────────
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
 }
@@ -842,12 +990,10 @@ function showMsg(id, txt, ok) {
   setTimeout(() => { el.textContent = ''; }, 4000);
 }
 
-// fechar modal ao clicar fora
 document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => { if(e.target === el) el.classList.remove('open'); });
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
 });
 
-// ─── INIT ─────────────────────────────────────────────────────────
 render();
 </script>
 </body>
