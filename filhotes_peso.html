@@ -587,12 +587,67 @@ tbody tr:hover td { background: var(--bg2); }
 .toast.ok { color: var(--good); border-color: var(--good-t); }
 .toast.err { color: var(--warn); border-color: var(--warn-t); }
 
+/* ── HAMBURGER ── */
+.nav-menu-btn {
+  display: none;
+  background: none;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  cursor: pointer;
+  color: var(--text2);
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.nav-menu-btn:hover { background: var(--bg2); color: var(--text); }
+
+.nav-drawer {
+  display: none;
+  position: absolute;
+  top: 60px;
+  left: 0; right: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 49;
+}
+.nav-drawer.open { display: flex; }
+.nav-drawer .btn { justify-content: flex-start; width: 100%; }
+
 /* ── RESPONSIVE ── */
-@media (max-width: 600px) {
-  nav { padding: 0 16px; }
-  main { padding: 20px 12px 0; }
+@media (max-width: 680px) {
+  nav { padding: 0 14px; position: relative; }
+  .nav-sub { display: none; }
+  .nav-right { display: none; }
+  .nav-menu-btn { display: flex; align-items: center; }
+
+  main { padding: 16px 12px 0; }
   .card { padding: 16px 14px; }
+
+  .metric-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pup-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .pup-weight { font-size: 22px; }
+
+  #chartWrap { height: 220px; }
+
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card-head { flex-direction: column; align-items: flex-start; }
+  .chart-legend { gap: 8px; }
+  .legend-item { font-size: 11px; }
+
+  .modal { padding: 20px; }
+  .modal-title { font-size: 15px; }
 }
 </style>
 </head>
@@ -613,6 +668,15 @@ tbody tr:hover td { background: var(--bg2); }
     <button class="btn btn-ghost btn-sm" onclick="openImport()">Importar</button>
     <button class="btn btn-ghost btn-sm" onclick="openExport()">Compartilhar</button>
     <button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema" aria-label="Alternar entre claro e escuro"></button>
+  </div>
+  <button class="nav-menu-btn" onclick="toggleDrawer()" aria-label="Menu">☰</button>
+  <!-- DRAWER MOBILE -->
+  <div class="nav-drawer" id="navDrawer">
+    <button class="btn btn-ghost" onclick="openManage();closeDrawer()">Gerenciar filhotes</button>
+    <button class="btn btn-ghost" onclick="openDelete();closeDrawer()">Excluir registro</button>
+    <button class="btn btn-ghost" onclick="openImport();closeDrawer()">Importar dados</button>
+    <button class="btn btn-ghost" onclick="openExport();closeDrawer()">Compartilhar</button>
+    <button class="btn btn-ghost" onclick="toggleTheme();closeDrawer()">Alternar tema</button>
   </div>
 </nav>
 
@@ -832,9 +896,14 @@ function renderMetrics() {
       <div class="metric-sub">desde o início</div>
     </div>
     <div class="metric-card">
-      <div class="metric-label">Acompanhamento</div>
+      <div class="metric-label">Dias de acompanhamento</div>
       <div class="metric-value">${days}<span style="font-size:14px;font-weight:400"> dia${days!==1?'s':''}</span></div>
-      <div class="metric-sub">${n} pesagem${n!==1?'s':''} registrada${n!==1?'s':''}</div>
+      <div class="metric-sub">desde ${state.dates[0]}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Pesagens registradas</div>
+      <div class="metric-value">${n}</div>
+      <div class="metric-sub">última em ${state.dates[n-1]}</div>
     </div>
   `;
 }
@@ -1134,6 +1203,17 @@ function toast(msg, ok) {
 
 document.querySelectorAll('.overlay').forEach(el => {
   el.addEventListener('click', e => { if(e.target===el) el.classList.remove('open'); });
+});
+
+function toggleDrawer() {
+  document.getElementById('navDrawer').classList.toggle('open');
+}
+function closeDrawer() {
+  document.getElementById('navDrawer').classList.remove('open');
+}
+document.addEventListener('click', e => {
+  const drawer = document.getElementById('navDrawer');
+  if (drawer.classList.contains('open') && !e.target.closest('nav')) closeDrawer();
 });
 
 render();
